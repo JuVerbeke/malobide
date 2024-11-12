@@ -10,5 +10,5 @@ class ExampleResource {
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    fun hello() = "Hello from Quarkus REST"
+    fun hello() = "Hello Ju from Quarkus REST"
 }

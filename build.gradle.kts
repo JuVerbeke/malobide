@@ -22,6 +22,7 @@ dependencies {
     implementation("io.quarkus:quarkus-rest")
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("io.rest-assured:rest-assured")
+    testImplementation("org.assertj:assertj-core:3.24.2")
 }
 
 group = "fr.verbeke"
@@ -45,4 +46,11 @@ allOpen {
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions.jvmTarget = JavaVersion.VERSION_21.toString()
     kotlinOptions.javaParameters = true
+}
+
+tasks.quarkusBuild {
+    nativeArgs {
+        "container-build" to true
+        "builder-image" to "quay.io/quarkus/ubi-quarkus-mandrel-builder-image:jdk-21"
+    }
 }
