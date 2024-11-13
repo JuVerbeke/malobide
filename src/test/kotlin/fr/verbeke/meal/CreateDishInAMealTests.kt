@@ -15,7 +15,7 @@ import java.time.Month
 import java.util.*
 import java.util.UUID.fromString
 
-class CreateDishInAMealTest {
+class CreateDishInAMealTests {
 
     private lateinit var mealRepository: InMemoryMealRepository
     private lateinit var registerDishCommandHandler: RegisterDishCommandHandler
