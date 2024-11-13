@@ -34,6 +34,13 @@ class MealTest {
         )
     }
 
+    private fun assertMealContainsDishes(vararg expectedDishes: Dish) {
+        val actualMeals: Set<Meal> = mealRepository.getMeals()
+        assertThat(actualMeals).hasSize(1)
+        assertThat(actualMeals.first().id).isEqualTo(mealId)
+        assertThat(actualMeals.first().dishes).containsExactly(*expectedDishes)
+    }
+
     @Test
     fun `should not be able to add a dish if there is no meal`() {
 
@@ -52,27 +59,6 @@ class MealTest {
     }
 
     @Test
-    fun `should successfully add a dish of carrot to the meal`() {
-
-        // Given
-        mealRepository.feedWith(createTuesdayMeal())
-
-        // When
-        val registerDishCommand = RegisterDishCommand(
-            mealId,
-            listOf("Carrot")
-        )
-        registerDishCommandHandler.handle(registerDishCommand)
-
-        // Then
-        val actualMeals: Set<Meal> = mealRepository.getMeals()
-        assertThat(actualMeals).hasSize(1)
-        assertThat(actualMeals.first().id).isEqualTo(registerDishCommand.mealId)
-        assertThat(actualMeals.first().dishes).hasSize(1)
-        assertThat(actualMeals.first().dishes).containsExactly(Dish(listOf(Ingredient("Carrot"))))
-    }
-
-    @Test
     fun `should not add a dish to the meal if that dish is empty`() {
 
         // Given
@@ -84,11 +70,13 @@ class MealTest {
             mealId,
             emptyList()
         )
-        registerDishCommandHandler.handle(registerDishCommand)
 
-        // Then
-        val actualMeals: Set<Meal> = mealRepository.getMeals()
-        assertThat(actualMeals).containsExactly(initialMeal)
+        // When / Then
+        assertThatThrownBy {
+            registerDishCommandHandler.handle(registerDishCommand)
+        }
+            .isInstanceOf(IllegalArgumentException::class.java)
+            .hasMessage("Dish must have at least one ingredient")
     }
 
     @Test
@@ -107,6 +95,45 @@ class MealTest {
         }
             .isInstanceOf(IllegalArgumentException::class.java)
             .hasMessage("Ingredient name must not be empty or blank")
+    }
+
+    @Test
+    fun `should successfully add a dish of carrot to the meal`() {
+
+        // Given
+        mealRepository.feedWith(createTuesdayMeal())
+
+        // When
+        val registerDishCommand = RegisterDishCommand(
+            mealId,
+            listOf("Carrot")
+        )
+        registerDishCommandHandler.handle(registerDishCommand)
+
+        // Then
+        assertMealContainsDishes(Dish(listOf(Ingredient("Carrot"))))
+    }
+
+    /**
+     * Expected size: 1 but was: 2 in:
+     * [Dish(ingredients=[Ingredient(name=Potatoes)]),
+     *     Dish(ingredients=[Ingredient(name=Steak)])]
+     */
+    @Test
+    fun `should successfully add a dish of potatoes and steak to the meal`() {
+
+        // Given
+        mealRepository.feedWith(createTuesdayMeal())
+
+        // When
+        val registerDishCommand = RegisterDishCommand(
+            mealId,
+            listOf("Potatoes", "Steak")
+        )
+        registerDishCommandHandler.handle(registerDishCommand)
+
+        // Then
+        assertMealContainsDishes(Dish(listOf(Ingredient("Potatoes"), Ingredient("Steak"))))
     }
 
 }

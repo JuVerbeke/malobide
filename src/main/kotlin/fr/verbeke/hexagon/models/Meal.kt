@@ -9,8 +9,8 @@ class Meal(val id: UUID, private val date: LocalDateTime) {
     private val _dishes: MutableList<Dish> = mutableListOf()
     val dishes: List<Dish> = _dishes
 
-    fun addDishes(dishes: List<Dish>): Meal {
-        _dishes.addAll(dishes)
+    fun addDish(dish: Dish): Meal {
+        _dishes.add(dish)
         return this
     }
 
