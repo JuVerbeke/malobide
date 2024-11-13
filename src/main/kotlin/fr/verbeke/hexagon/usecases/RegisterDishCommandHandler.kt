@@ -12,7 +12,7 @@ class RegisterDishCommandHandler(private val mealRepository: MealRepository) {
     fun handle(registerDishCommand: RegisterDishCommand) {
         val meal: Meal = mealRepository.getById(registerDishCommand.mealId)
         val dishIngredients: List<Ingredient> = registerDishCommand.ingredients.map { Ingredient(it) }
-        mealRepository.save(meal.addDish(Dish(dishIngredients)))
+        mealRepository.update(meal.addDish(Dish(dishIngredients)))
     }
 
 }

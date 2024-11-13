@@ -1,5 +1,6 @@
 package fr.verbeke.adapters.primary.quarkus.controllers
 
+import fr.verbeke.hexagon.gateways.repositories.MealRepository
 import fr.verbeke.hexagon.usecases.RegisterDishCommand
 import fr.verbeke.hexagon.usecases.RegisterDishCommandHandler
 import jakarta.inject.Inject
@@ -14,7 +15,7 @@ import java.util.*
 class MealController {
 
     @Inject
-    lateinit var registerDishCommandHandler: RegisterDishCommandHandler
+    lateinit var mealRepository: MealRepository
 
     @POST
     @Path("/{mealId}/dishes")
@@ -22,7 +23,8 @@ class MealController {
         @PathParam("mealId") mealId: String,
         dishDTO: DishDTO
     ): Response {
-        registerDishCommandHandler.handle(
+        val useCase = RegisterDishCommandHandler(mealRepository)
+        useCase.handle(
             RegisterDishCommand(
                 mealId = UUID.fromString(mealId),
                 ingredients = dishDTO.ingredients.map { it.name }

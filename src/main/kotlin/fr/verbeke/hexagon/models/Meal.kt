@@ -4,7 +4,7 @@ import jakarta.annotation.Generated
 import java.time.LocalDateTime
 import java.util.*
 
-class Meal(val id: UUID, private val date: LocalDateTime) {
+class Meal(val id: UUID, val date: LocalDateTime) {
 
     private val _dishes: MutableList<Dish> = mutableListOf()
     val dishes: List<Dish> = _dishes

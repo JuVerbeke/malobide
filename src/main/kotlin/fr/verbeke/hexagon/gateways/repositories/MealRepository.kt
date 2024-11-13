@@ -5,5 +5,5 @@ import java.util.*
 
 interface MealRepository {
     fun getById(mealId: UUID): Meal
-    fun save(addDish: Meal)
+    fun update(addDish: Meal)
 }

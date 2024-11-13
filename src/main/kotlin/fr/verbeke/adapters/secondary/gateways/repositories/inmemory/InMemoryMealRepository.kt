@@ -2,10 +2,8 @@ package fr.verbeke.adapters.secondary.gateways.repositories.inmemory
 
 import fr.verbeke.hexagon.gateways.repositories.MealRepository
 import fr.verbeke.hexagon.models.Meal
-import jakarta.inject.Singleton
 import java.util.*
 
-@Singleton
 class InMemoryMealRepository : MealRepository {
 
     private val meals: MutableMap<UUID, Meal> = mutableMapOf()
@@ -22,7 +20,7 @@ class InMemoryMealRepository : MealRepository {
         return meals[mealId] ?: throw NoSuchElementException("Meal with id $mealId not found")
     }
 
-    override fun save(meal: Meal) {
+    override fun update(meal: Meal) {
         meals[meal.id] = meal
     }
 }

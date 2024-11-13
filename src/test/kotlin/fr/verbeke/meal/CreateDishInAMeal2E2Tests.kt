@@ -1,19 +1,24 @@
 package fr.verbeke.meal
 
+import fr.verbeke.PostgreSQLTestResource
 import fr.verbeke.adapters.primary.quarkus.controllers.DishDTO
 import fr.verbeke.adapters.primary.quarkus.controllers.IngredientDTO
 import fr.verbeke.hexagon.gateways.repositories.MealRepository
 import fr.verbeke.hexagon.models.Ingredient
+import io.quarkus.test.common.QuarkusTestResource
 import io.quarkus.test.junit.QuarkusTest
 import io.restassured.RestAssured.given
 import io.restassured.http.ContentType
 import jakarta.inject.Inject
+import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper
 import java.util.*
 
 @QuarkusTest
+@QuarkusTestResource(PostgreSQLTestResource::class)
+@Transactional
 class CreateDishInAMeal2E2Tests {
 
     @Inject
@@ -22,7 +27,7 @@ class CreateDishInAMeal2E2Tests {
     var objectMapper: ObjectMapper = ObjectMapper()
 
     @Test
-    fun `wip - should create a dish in a meal - inmemorydb`() {
+    fun `should create a dish in a meal`() {
 
         val myDishDTO = DishDTO(listOf(IngredientDTO("Carrot")))
 
@@ -45,7 +50,7 @@ class CreateDishInAMeal2E2Tests {
             .then()
             .statusCode(201)
 
-        var meal = repository.getById(UUID.fromString("abc"))
+        var meal = repository.getById(UUID.fromString("a750489f-1264-42ed-94ed-5a87290d0fa7"))
         assertThat(meal.dishes).isNotEmpty
         assertThat(meal.dishes.size).isEqualTo(1)
         assertThat(meal.dishes[0].ingredients).containsExactly(Ingredient("Carrot"))
