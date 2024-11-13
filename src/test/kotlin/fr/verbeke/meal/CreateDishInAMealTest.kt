@@ -15,11 +15,12 @@ import java.time.Month
 import java.util.*
 import java.util.UUID.fromString
 
-class MealTest {
+class CreateDishInAMealTest {
 
     private lateinit var mealRepository: InMemoryMealRepository
     private lateinit var registerDishCommandHandler: RegisterDishCommandHandler
-    private val mealId: UUID = fromString("a750489f-1264-42ed-94ed-5a87290d0fa7")
+    private val tMealId: UUID = fromString("a750489f-1264-42ed-94ed-5a87290d0fa7")
+    private val wMealId: UUID = fromString("7e7b8647-aa6e-44d7-8b5b-db873a3811ea")
 
     @BeforeEach
     fun setUp() {
@@ -29,16 +30,22 @@ class MealTest {
 
     private fun createTuesdayMeal(): Meal {
         return Meal(
-            mealId,
-            LocalDateTime.of(2024, Month.NOVEMBER, 12, 15, 53, 0)
+            tMealId,
+            LocalDateTime.of(2024, Month.NOVEMBER, 12, 12, 53, 0)
         )
     }
 
-    private fun assertMealContainsDishes(vararg expectedDishes: Dish) {
-        val actualMeals: Set<Meal> = mealRepository.getMeals()
-        assertThat(actualMeals).hasSize(1)
-        assertThat(actualMeals.first().id).isEqualTo(mealId)
-        assertThat(actualMeals.first().dishes).containsExactly(*expectedDishes)
+    private fun createWednesdayMeal(): Meal {
+        return Meal(
+            wMealId,
+            LocalDateTime.of(2024, Month.NOVEMBER, 13, 8, 27, 0)
+        )
+    }
+
+    private fun assertMealContainsDishes(mealId: UUID, vararg expectedDishes: Dish) {
+        val mealUT: Meal = mealRepository.getMeals().firstOrNull { it.id == mealId }
+            ?: throw NoSuchElementException("Meal with id $mealId not found")
+        assertThat(mealUT.dishes).containsExactly(*expectedDishes)
     }
 
     @Test
@@ -46,7 +53,7 @@ class MealTest {
 
         // Given
         val registerDishCommand = RegisterDishCommand(
-            mealId,
+            tMealId,
             listOf("Carrot")
         )
 
@@ -55,7 +62,7 @@ class MealTest {
             registerDishCommandHandler.handle(registerDishCommand)
         }
             .isInstanceOf(NoSuchElementException::class.java)
-            .hasMessage("Meal with id $mealId not found")
+            .hasMessage("Meal with id $tMealId not found")
     }
 
     @Test
@@ -67,7 +74,7 @@ class MealTest {
 
         // When
         val registerDishCommand = RegisterDishCommand(
-            mealId,
+            tMealId,
             emptyList()
         )
 
@@ -87,7 +94,7 @@ class MealTest {
 
         // When / Then
         val registerDishCommand = RegisterDishCommand(
-            mealId,
+            tMealId,
             listOf("")
         )
         assertThatThrownBy {
@@ -101,39 +108,55 @@ class MealTest {
     fun `should successfully add a dish of carrot to the meal`() {
 
         // Given
-        mealRepository.feedWith(createTuesdayMeal())
+        val meal = createTuesdayMeal()
+        mealRepository.feedWith(meal)
 
         // When
         val registerDishCommand = RegisterDishCommand(
-            mealId,
+            tMealId,
             listOf("Carrot")
         )
         registerDishCommandHandler.handle(registerDishCommand)
 
         // Then
-        assertMealContainsDishes(Dish(listOf(Ingredient("Carrot"))))
+        assertMealContainsDishes(meal.id, Dish(listOf(Ingredient("Carrot"))))
     }
 
-    /**
-     * Expected size: 1 but was: 2 in:
-     * [Dish(ingredients=[Ingredient(name=Potatoes)]),
-     *     Dish(ingredients=[Ingredient(name=Steak)])]
-     */
     @Test
     fun `should successfully add a dish of potatoes and steak to the meal`() {
 
         // Given
-        mealRepository.feedWith(createTuesdayMeal())
+        val meal = createTuesdayMeal()
+        mealRepository.feedWith(meal)
 
         // When
         val registerDishCommand = RegisterDishCommand(
-            mealId,
+            tMealId,
             listOf("Potatoes", "Steak")
         )
         registerDishCommandHandler.handle(registerDishCommand)
 
         // Then
-        assertMealContainsDishes(Dish(listOf(Ingredient("Potatoes"), Ingredient("Steak"))))
+        assertMealContainsDishes(meal.id, Dish(listOf(Ingredient("Potatoes"), Ingredient("Steak"))))
+    }
+
+    @Test
+    fun `should successfully add a dish of bread and nutella to a second meal`() {
+
+        // Given
+        mealRepository.feedWith(createTuesdayMeal())
+        val meal = createWednesdayMeal()
+        mealRepository.feedWith(meal)
+
+        // When
+        val registerDishCommand = RegisterDishCommand(
+            wMealId,
+            listOf("Bread", "Nutella")
+        )
+        registerDishCommandHandler.handle(registerDishCommand)
+
+        // Then
+        assertMealContainsDishes(meal.id, Dish(listOf(Ingredient("Bread"), Ingredient("Nutella"))))
     }
 
 }
