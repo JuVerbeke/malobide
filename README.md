@@ -1,9 +1,19 @@
 # malobide
-Malobide is an app to help you analyze your stomach aches or digestion problems based on your diet and other factors (sleep, stress, drugs, etc...)
+
+Malobide is an app to help you analyze your stomach aches or digestion problems based on your diet and other factors (
+sleep, stress, drugs, etc...)
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+
+## Videos explaining the code commit by commit
+
+| Commit Name                                             | Video                                                                                                                    |
+|---------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
+| feat: add a dish of one ingredient to the existing meal | [![Initial Commit](https://img.youtube.com/vi/t2jV7QWGE1g/0.jpg)](https://www.youtube.com/watch?v=t2jV7QWGE1g)           |
+| feat: first usecases when dish is not added to meal     | [![Feature X Implementation](https://img.youtube.com/vi/WiZQWEZC2V8/0.jpg)](https://www.youtube.com/watch?v=WiZQWEZC2V8) |
+| feat: add a dish of multiple ingredients to the meal    | [![Feature X Implementation](https://img.youtube.com/vi/mjL2sm1b8Yw/0.jpg)](https://www.youtube.com/watch?v=mjL2sm1b8Yw) |
 
 ## Running the application in dev mode
 
